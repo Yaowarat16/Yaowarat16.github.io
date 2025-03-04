@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cobracategorizer Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #009900;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .app {
+            width: 90%;
+            max-width: 1200px;
+            height: 90vh;
+            background-color: #F5FFFA;
+            border-radius: 15px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .active { display: flex; }
+
+        .screen img {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+
+        .screen h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .screen p {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background-color: #06c755;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover { background-color: #04a944; }
+
+        .chat-header {
+            background-color: #06c755;
+            color: white;
+            padding: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .chat-header .back-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #ffffff;
+            color: #06c755;
+            border: none;
+            padding: 8px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .chat-list-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .chat-list-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto; /* Enables scrolling */
+            background-color: #f1f1f1;
+            width: 100%;
+            max-height: 400px; /* You can adjust the height as needed */
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+
+        .message.user { background-color: #06c755; color: white; align-self: flex-end; }
+        .message.bot { background-color: white; border: 1px solid #ddd; align-self: flex-start; }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #ddd;
+            width: 100%;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input button {
+            background-color: #06c755;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .chat-input .upload-btn {
+            margin-left: 10px;
+            cursor: pointer;
+            padding: 8px;
+            background-color: #ddd;
+            border-radius: 50%;
+        }
+
+        .chat-input .upload-btn input {
+            display: none;
+        }
+
+        .message img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <div class="screen active" id="goalScreen">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="LINE Logo">
+        <h1>Cobracategorizer Bot</h1>
+        <p>พูดคุยกับแชทบอทเพื่อรับคำแนะนำเกี่ยวกับงูและสัตว์เลื้อยคลาน</p>
+        <button class="button" onclick="showScreen('loginScreen')">ดำเนินการต่อ</button>
+    </div>
+
+    <div class="screen" id="loginScreen">
+        <h1>ยินดีต้อนรับสู่ LINE</h1>
+        <button class="button" onclick="showScreen('chatListScreen')">เข้าสู่ระบบ</button>
+    </div>
+
+    <div class="screen" id="chatListScreen">
+        <div class="chat-header">
+            แชทของคุณ
+            <button class="back-button" onclick="showScreen('loginScreen')">ย้อนกลับ</button>
+        </div>
+        <div class="chat-list-item" onclick="showScreen('chatWindow')">
+            <img src="https://png.pngtree.com/png-clipart/20230512/original/pngtree-cute-baby-face-cartoon-png-image_9159296.png" alt="bot">
+            <div>Mare</div>
+        </div>
+        <div class="chat-list-item" onclick="showScreen('chatWindow')">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs9QAkxL6HNSo5VAj8oy2P2hcCMv3CfHRg8Q&s" alt="bot">
+            <div>Cobra Bot</div>
+        </div>
+    </div>
+
+    <div class="screen" id="chatWindow">
+        <div class="chat-header">
+            Chatbot
+            <button class="back-button" onclick="showScreen('chatListScreen')">ย้อนกลับ</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">สวัสดี! ฉันคือCobra Bot มีอะไรให้ช่วยไหม?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="พิมพ์ข้อความ...">
+            <button onclick="sendMessage()">ส่ง</button>
+            <div class="upload-btn">
+                <label for="uploadImage">📷</label>
+                <input type="file" id="uploadImage" onchange="sendImage(event)">
+            </div>
+        </div>
+        <button class="button" onclick="resetChat()">รีเซ็ทแชท</button>
+    </div>
+</div>
+
+<script>
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function sendMessage() {
+        let input = document.getElementById("messageInput");
+        let messageText = input.value.trim();
+        if (messageText === "") return;
+
+        let messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", "user");
+        messageDiv.textContent = messageText;
+        document.getElementById("chatMessages").appendChild(messageDiv);
+        input.value = "";
+
+        // Scroll to the bottom of the chat messages
+        document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+
+        // Simulate a bot reply
+        setTimeout(() => {
+            let botReply = document.createElement("div");
+            botReply.classList.add("message", "bot");
+
+            if (messageText.includes("เป็นตัวดำ, น้ำตาล, เขียวอมเทา เหลืองหม่น รวมทั้งสีขาวปลอดทั้งลำตัว")) {
+                botReply.textContent = "นี่คืองูเห่าจัดเป็นงูที่อันตราย มีนิสัยดุร้ายเช่นเดียวกับงูจงอาง เมื่อตกใจหรือต้องการขู่ศัตรู มักทำเสียงขู่ฟู่ ๆ โดยพ่นลมออกจากทางรูจมูก และแผ่แผ่นหนังที่อยู่หลังบริเวณคอออกเป็นแผ่นด้านข้างเรียกว่า แม่เบี้ย หรือ พังพาน ซึ่งบริเวณแม่เบี้ยนี้จะมีลวดลายเป็นดอกดวงสีขาวหรือสีเหลืองนวลเป็นรูปลักษณ์ต่าง ๆ เช่น คล้ายตัวอักษรวีหรืออักษรยูหรือวงกลม หรือไม่มีเลยก็ได้ เรียกว่า ดอกจัน";
+            } else {
+                botReply.textContent = "ขอโทษครับ ฉันไม่เข้าใจคำถามของคุณ กรุณาถามใหม่!";
+            }
+
+            document.getElementById("chatMessages").appendChild(botReply);
+
+            // Scroll to the bottom again
+            document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+        }, 1000);
+    }
+
+    function sendImage(event) {
+        let imageFile = event.target.files[0];
+        if (imageFile) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let messageDiv = document.createElement("div");
+                messageDiv.classList.add("message", "user");
+
+                let image = document.createElement("img");
+                image.src = e.target.result;
+                messageDiv.appendChild(image);
+                document.getElementById("chatMessages").appendChild(messageDiv);
+
+                // Scroll to the bottom
+                document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+
+                setTimeout(() => {
+                    let botReply = document.createElement("div");
+                    botReply.classList.add("message", "bot");
+                    botReply.textContent = "นี่คืองูเห่าจัดเป็นงูที่อันตราย มีนิสัยดุร้ายเช่นเดียวกับงูจงอาง เมื่อตกใจหรือต้องการขู่ศัตรู มักทำเสียงขู่ฟู่ ๆ โดยพ่นลมออกจากทางรูจมูก และแผ่แผ่นหนังที่อยู่หลังบริเวณคอออกเป็นแผ่นด้านข้างเรียกว่า แม่เบี้ย หรือ พังพาน ซึ่งบริเวณแม่เบี้ยนี้จะมีลวดลายเป็นดอกดวงสีขาวหรือสีเหลืองนวลเป็นรูปลักษณ์ต่าง ๆ เช่น คล้ายตัวอักษรวีหรืออักษรยูหรือวงกลม หรือไม่มีเลยก็ได้ เรียกว่า ดอกจัน";
+                    document.getElementById("chatMessages").appendChild(botReply);
+
+                    // Scroll to the bottom again
+                    document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+                }, 1000);
+            };
+            reader.readAsDataURL(imageFile);
+        }
+    }
+
+    function resetChat() {
+        document.getElementById("chatMessages").innerHTML = "<div class='message bot'>สวัสดี! ฉันคือบอท มีอะไรให้ช่วยไหม?</div>";
+        document.getElementById("messageInput").value = "";
+    }
+</script>
+
+</body>
+</html>
